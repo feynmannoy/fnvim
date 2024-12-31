@@ -13,20 +13,6 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- require("lazy").setup({
--- 	require("plugins.alpha"),
--- 	require("plugins.auto-pairs"),
--- 	require("plugins.bufferline"),
--- 	require("plugins.colortheme"),
--- 	require("plugins.comment"),
--- 	require("plugins.lspconfig"),
--- 	require("plugins.lualine"),
--- 	require("plugins.mason"),
--- 	require("plugins.neo-tree"),
--- 	require("plugins.telescpoe"),
--- 	require("plugins.toggleterm"),
--- })
-
 -- configure lazy.nvim
 require("lazy").setup({
 	spec = {
@@ -34,7 +20,7 @@ require("lazy").setup({
 	},
 	defaults = { lazy = true, version = false }, -- always use the latest git commit
 	-- install = { colorscheme = { "tokyonight", "gruvbox" } },
-	checker = { enabled = false }, -- automatically check for plugin updates
+	checker = { enabled = false },            -- automatically check for plugin updates
 	performance = {
 		rtp = {
 			-- disable some rtp plugins
@@ -49,7 +35,3 @@ require("lazy").setup({
 		},
 	},
 })
-
-
-
-

@@ -1,78 +1,113 @@
-return {
-	"mfussenegger/nvim-dap",
-	dependencies = {
-		"rcarriga/nvim-dap-ui",
-	},
-	keys = {
-      { "<F9>", "<cmd>lua require'dap'.toggle_breakpoint()<CR>", desc = "breakpoint set" },
-	},
-	config = function()
-		local dap = require('dap')
-		-- more language config : https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation
-		-- golang
-		dap.adapters.delve = {
-		  type = 'server',
-		  port = '${port}',
-		  executable = {
-			command = 'dlv',
-			args = {'dap', '-l', '127.0.0.1:${port}'},
-		  }
-		}
-		dap.configurations.go = {
-		  {
+local function setup_dap()
+	-- https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation
+	local dap = require("dap")
+
+	------------------------- cpp -------------------------
+	dap.adapters.codelldb = {
+		type = "server",
+		port = "${port}",
+		executable = {
+			command = "/Users/bytedance/.local/share/nvim/mason/bin/codelldb",
+			args = { "--port", "${port}" },
+		},
+	}
+	dap.configurations.cpp = {
+		{
+			name = "Launch file",
+			type = "codelldb",
+			request = "launch",
+			program = function()
+				return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+			end,
+			cwd = "${workspaceFolder}",
+			stopOnEntry = false,
+			args = {},
+			runInTerminal = false, -- 确保这一行存在
+		},
+	}
+
+	------------------------- go -------------------------
+	dap.adapters.delve = {
+		type = "server",
+		port = "${port}",
+		executable = {
+			command = "dlv",
+			args = { "dap", "-l", "127.0.0.1:${port}" },
+		},
+	}
+	dap.configurations.go = {
+		{
 			type = "delve",
 			name = "Debug",
 			request = "launch",
-			program = "${file}"
-		  },
-		  {
+			program = "${file}",
+		},
+		{
 			type = "delve",
-			name = "Debug test", -- configuration for debugging test files
+			name = "Debug test",
 			request = "launch",
 			mode = "test",
-			program = "${file}"
-		  },
-		  -- works with go.mod packages and sub packages 
-		  {
+			program = "${file}",
+		},
+		{
 			type = "delve",
 			name = "Debug test (go.mod)",
 			request = "launch",
 			mode = "test",
-			program = "./${relativeFileDirname}"
-		  } 
-		}
-		-- keymapping
-		vim.keymap.set("n", "<F5>", function()
-			dap.continue()
-		end)
-		-- vim.keymap.set("n", "<F9>", function()
-		-- 	dap.toggle_breakpoint()
-		-- end)
-		vim.keymap.set("n", "<F10>", function()
-			dap.step_over()
-		end)
-		vim.keymap.set("n", "<F11>", function()
-			dao.step_into()
-		end)
-		-- vim.keymap.set("n", "<leader>do", function()
-		-- 	require("dap").step_out()
-		-- end)
-		vim.keymap.set("n", "<leader>dc", function()
-			dap.disconnect()
-    		vim.api.nvim_input(':Neotree toggle<CR>:wincmd l<CR>')
-		end)
-		-- ui 
-		require("dapui").setup()
-		local dapui = require("dapui")
-		dap.listeners.after.event_initialized["dapui_config"] = function()
-    		vim.api.nvim_input(':Neotree toggle<CR>')
-			dapui.open()
-		end
-		dap.listeners.before.event_terminated["dapui_config"] = function()
-			dapui.close()
-		end
-		dap.listeners.before.event_exited["dapui_config"] = function()
-			dapui.close()
-		end
-	end,	
+			program = "./${relativeFileDirname}",
+		},
+	}
+end
+
+local function setup_keymaps()
+	local dap = require("dap")
+
+	-- 设置按键绑定
+	vim.keymap.set("n", "<F5>", function()
+		dap.continue()
+	end)
+	vim.keymap.set("n", "<F10>", function()
+		dap.step_over()
+	end)
+	vim.keymap.set("n", "<F11>", function()
+		dap.step_into()
+	end)
+	vim.keymap.set("n", "<leader>dc", function()
+		dap.disconnect()
+	end)
+end
+
+local function setup_dapui()
+	local dap = require("dap")
+	local dapui = require("dapui")
+
+	-- 设置 dapui
+	require("dapui").setup()
+
+	-- 设置调试事件的监听器
+	dap.listeners.after.event_initialized["dapui_config"] = function()
+		dapui.open()
+	end
+	dap.listeners.before.event_terminated["dapui_config"] = function()
+		dapui.close()
+	end
+	dap.listeners.before.event_exited["dapui_config"] = function()
+		dapui.close()
+	end
+end
+
+return {
+	"mfussenegger/nvim-dap",
+	dependencies = {
+		"nvim-neotest/nvim-nio",
+		"rcarriga/nvim-dap-ui",
+	},
+	keys = {
+		{ "<F9>", "<cmd>lua require'dap'.toggle_breakpoint()<CR>", desc = "breakpoint set" },
+	},
+	config = function()
+		setup_dap()
+		setup_keymaps()
+		setup_dapui()
+	end,
 }

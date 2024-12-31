@@ -5,15 +5,15 @@ return {
 		return {
 			vim.keymap.set("n", "]b", ":BufferLineCycleNext<CR>", { noremap = true }),
 			vim.keymap.set("n", "[b", ":BufferLineCyclePrev<CR>", { noremap = true }),
-			vim.keymap.set("n", "<leader>c", ":bdelete<CR>", { noremap = true }),
+			vim.keymap.set("n", "<leader>c", ":BufferLineCloseOthers<CR>", { noremap = true }),
 			options = {
 				offsets = {
 					{
 						filetype = "neo-tree",
-						text = "Working Space", 
+						text = "Working Space",
 						text_align = "left",
 						separator = true,
-               		},
+					},
 				},
 			},
 		}

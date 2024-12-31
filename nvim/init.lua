@@ -9,5 +9,3 @@ require("plugins_manager")
 
 -- autocmd
 require("autocmds")
-
-
